@@ -1,0 +1,30 @@
+{
+  "id": "1525611",
+  "name": "landing page",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "753494",
+      "name": "播放",
+      "font_class": "bofang",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "2744617",
+      "name": "对勾",
+      "font_class": "duigou",
+      "unicode": "e64d",
+      "unicode_decimal": 58957
+    },
+    {
+      "icon_id": "2744677",
+      "name": "向左箭头",
+      "font_class": "xiangzuojiantou",
+      "unicode": "e658",
+      "unicode_decimal": 58968
+    }
+  ]
+}

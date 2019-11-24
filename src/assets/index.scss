@@ -1,0 +1,62 @@
+/* vant-ui样式重置 */
+.van-toast{
+	font-size: 30px;
+	line-height: 36px;
+	padding: 24px 34px;
+	border-radius: 10px;
+	width: auto;
+	min-width: 1.2rem;
+}
+.van-toast.van-toast--text{
+	padding: 20px 20px;
+}
+
+/* 基础样式重置 */
+html, body{
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	-webkit-text-size-adjust: 100%;
+	box-sizing: border-box;
+}
+body, a, button, input{
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-overflow-scrolling: touch;
+}
+input{
+	border: 0;
+	border-radius: 0;
+	-webkit-appearance: none;
+}
+:focus{
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+}
+.clearfix{
+	*zoom: 1;
+}
+.clearfix:after{
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+h1, h2, h3, h4, h5, h6, p, ul, li, label{
+	margin: 0;
+	padding: 0;
+}
+ul, li{
+	list-style: none;
+}
+a{
+	-webkit-touch-callout: none;
+	text-decoration: none;
+}
+img{
+	-webkit-touch-callout: none;
+}

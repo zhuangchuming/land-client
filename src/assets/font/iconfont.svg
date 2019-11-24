@@ -1,0 +1,35 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<!--
+2013-9-30: Created.
+-->
+<svg>
+<metadata>
+Created by iconfont
+</metadata>
+<defs>
+
+<font id="iconfont" horiz-adv-x="1024" >
+  <font-face
+    font-family="iconfont"
+    font-weight="500"
+    font-stretch="normal"
+    units-per-em="1024"
+    ascent="896"
+    descent="-128"
+  />
+    <missing-glyph />
+    
+    <glyph glyph-name="bofang" unicode="&#58897;" d="M261.6 795.2l582.4-330.4c60-34.4 60-119.2 0-153.6l-582.4-330.4c-60-34.4-135.2 8.8-135.2 76.8L126.4 718.4C127.2 786.4 201.6 829.6 261.6 795.2L261.6 795.2zM261.6 795.2"  horiz-adv-x="1024" />
+
+    
+    <glyph glyph-name="duigou" unicode="&#58957;" d="M595.716966-111.23358L17.066667 467.41672l129.936931 129.936931 578.6503-578.6503zM1461.915767 754.613051L595.933686-111.362257l-129.936931 129.934673L1331.978836 884.554497z"  horiz-adv-x="1478" />
+
+    
+    <glyph glyph-name="xiangzuojiantou" unicode="&#58968;" d="M219.285886 384.035437L722.756052 887.508229l82.040749-82.040749L301.325322 301.996001zM722.719303-119.298231L219.247824 384.170623l82.039436 82.040748 503.471479-503.471479z"  horiz-adv-x="1024" />
+
+    
+
+
+  </font>
+</defs></svg>
