@@ -1,34 +1,65 @@
 <template>
 	<div class="home">
 		<div :class="['title',{isApp:$isAPP}]">
-			Homesprit
-			<div class="describe">深圳市晨高科技有限公司<br/>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;———致力于汽车配件，汽车用品以及智能家居用品的开发以及销售，专注打造高品质的产品，有多年的C端用户服务经验，深入了解市场对产品的需要，与时俱进，开发更符合市场要求的产品。</div>
+			{{netInfo&&netInfo.brand}}
+			<div class="describe">{{netInfo&&netInfo.introduce}}</div>
 		</div>
-		<div :class="['content',{isApp:$isAPP}]">
-			<div class="box" @click="toDetail(0)"><img class="s-box-1" src="@/assets/imgs/small-box/1.png"/></div>
-			<video v-if="!$isAPP" class="box-video" controls="controls" webkit-playsinline="webkit-playsinline" playsinline="playsinline" :autoplay="false" poster="" src="http://cloud.video.taobao.com/play/u/1006794339/p/2/e/6/t/1/232901126539.mp4" type="video/mp4"></video>
-
-			<video v-if="!$isAPP" class="box-video" controls="controls" webkit-playsinline="webkit-playsinline" playsinline="playsinline" :autoplay="false" poster="" src="http://cloud.video.taobao.com/play/u/1006794339/p/2/e/6/t/1/226161490212.mp4" type="video/mp4"></video>
-			<div class="box" @click="toDetail(1)"><img class="s-box-1" src="@/assets/imgs/gap/1.jpg"/></div>
-
-			<div class="box" @click="toDetail(2)"><img class="s-box-1" src="@/assets/imgs/glass/1.jpg"/></div>
-			<video v-if="!$isAPP" class="box-video" controls="controls" webkit-playsinline="webkit-playsinline" playsinline="playsinline" :autoplay="false" poster="" src="http://cloud.video.taobao.com/play/u/1006794339/p/2/e/6/t/1/230335732886.mp4" type="video/mp4"></video>
-
-			<div class="box" @click="toDetail(4)"><img class="s-box-1" src="@/assets/imgs/ashtray/1.jpg"/></div>
-			<div class="box" @click="toDetail(5)"><img class="s-box-1" src="@/assets/imgs/ag3/1.png"/></div>
-
-			<video v-if="!$isAPP" class="box-video" controls="controls" webkit-playsinline="webkit-playsinline" playsinline="playsinline" :autoplay="false" poster="" src="http://cloud.video.taobao.com/play/u/2698135680/p/2/e/6/t/1/231469421534.mp4" type="video/mp4"></video>
-			<div class="box" @click="toDetail(6)"><img class="s-box-1" src="@/assets/imgs/flash1/1.png"/></div>
-
-		</div>
+		<ul :class="['product-list',{isApp:$isAPP,WAP:!$isAPP}]">
+			<li class="product-item" v-for="(item,idx) of list" :key="idx" @click="toDetail(item)">
+				<div class="box"><img class="s-box-1" :src="imgSrv+item.pic"/></div>
+				<div class="tit">{{item.tit}}</div>
+				<div class="price">{{item.price}}</div>
+			</li>
+		</ul>
 	</div>
 </template>
 <script>
+import {imgSrv} from '@/config';
+// 手机设计比例是 1334*750
+// 电脑设计比例是 1600:900
 export default {
 	name:'home',
+	data(){
+		return{
+			netInfo:null,//网站信息
+			list:null,
+			pageCnt:0,//页码数
+            imgSrv:imgSrv,
+		}
+	},
+	created(){
+		this.getNetUrl();
+		this.getProductLst();
+	},
 	methods:{
-		toDetail(num){
-			this.$router.push({name:'detail',query:{index:num}});
+		 //获取当前域名，并用这个域名去后端换取code
+        async getNetUrl(){
+            let {data,error} = await this.$request({url:'/netinfo'});
+            if(data){
+				this.netInfo=data;
+				this.$store.commit('setNetInfo',data)
+            }
+		},
+		async getProductLst(page){
+			let params={};
+			if(!this.pageCnt){
+                params.total=1;//返回总页数
+			}
+			if(page){
+				params.page=page;
+			}
+			let {data,error} = await this.$request({url:'/product/query',params});
+            if(data){
+                this.list=data.data;
+                if(params.total){
+                    this.pageCnt=data.len;
+                }
+            }else{
+                this.$toast(error.msg||"获取产品列表失败")
+            }
+		},
+		toDetail(item){
+			this.$router.push({name:'detail',query:{data:JSON.stringify(item)}});
 		}
 	}
 
@@ -73,8 +104,7 @@ export default {
 			margin-left: 150px;
 		}
 	}
-	.content{
-		
+	.product-list{
 		width:100%;
 		display:flex;
 		align-items: center;
@@ -82,35 +112,75 @@ export default {
 		padding-left: 20px;
 		padding-right: 20px;
 		box-sizing: border-box;
-		.box{
-			width:50%;
-			padding: 20px;
-			box-sizing: border-box;
-			.s-box-1{
-				height: 375px;
-				transition: all 0.5s;
-			}
-			&:hover,&:active{
-				background-color: #f7f7f7;
+		.product-item{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			.box{
+				width: 300px;
+				height: 300px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
 				.s-box-1{
-    				transform: scale(1.05);
+					max-width: 240px;
+					max-height: 240px;
+					transition: all 0.5s;
 				}
+				&:hover,&:active{
+					.s-box-1{
+						transform: scale(1.05);
+					}
+				}
+			}
+			.tit{
+				color:#0066c0;
+				font-size: 14px;
+				margin-top: 18px;
+				@include ellipsis(2);
+				align-self: baseline;
+			}
+			.price{
+				font-size: 18px;
+				font-weight: bold;
+				align-self: baseline;
+			}
+		}
+		&.WAP{
+			background-color: #f7f7f7;
+			.product-item{
+				width: 300px;
+				height: 400px;
+				background-color: #fff;
+				margin-right: 4px;
+				margin-bottom: 4px;
+				padding: 8px;
+				box-sizing: border-box;
 			}
 		}
 		&.isApp{
 			flex-direction: column;
 			flex-wrap: nowrap;
-			.box {
-				width: 100%;
-				.s-box-1{
-					max-width: 100%;
-					height: inherit;
+			padding-top: 10px;
+			.product-item{
+				.box {
+					width: 500px;
+					height: 500px;
+					.s-box-1{
+						max-width: 500px;
+						max-height: 500px;
+					}
+				}
+				.tit{
+					color:#0066c0;
+					font-size: 26px;
+					margin-top: 25px;
+				}
+				.price{
+					font-size: 36px;
+					margin-top: 15px;
 				}
 			}
-		}
-		.box-video{
-			width: 50%;
-			height: 325px;
 		}
 	}
 }

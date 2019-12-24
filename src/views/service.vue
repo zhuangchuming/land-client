@@ -1,7 +1,7 @@
 <template>
 	<div class="service">
         <common-tit v-if="state>1" :tit="getTit" @back="back"/>
-		<div class="content">
+		<div class="content" :class="{'wab-css':$isWap}">
             <div v-if="state==0" class="win1">
                 <div class="title">Get Your Free Gift!</div>
                 <div class="cont">{{alarm}}</div>
@@ -229,11 +229,13 @@ export default {
     },
     created(){
         this.getNetUrl();
+        if(this.$isWap){
+            setHtmlFontSizeID(null,1344);//将设计稿更改为1344
+        }
     },
     components:{
         CommonTit
     }
-
 }
 </script>
 <style scoped lang="scss">
@@ -243,11 +245,15 @@ export default {
     background-color: white;
     display: flex;
     flex-direction: column;
+    align-items: center;
     .content{
-        max-width: 800px;
+        max-width: 770px;
         flex:1;
         display: flex;
         overflow: auto;
+        &.wab-css{
+            border:1PX solid #999;
+        }
         .gift-item{
             display: flex;
             margin-top: 24px;

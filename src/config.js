@@ -1,5 +1,7 @@
-const pre="/api";
+// const pre="/api";
+const pre="/landpage";
 const service=""
 module.exports={
-    serviceUrl:pre+service
+    serviceUrl:service+pre,
+    imgSrv:'http://localhost:8999'+pre
 }

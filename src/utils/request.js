@@ -1,6 +1,6 @@
 import axios from 'axios';
-import eventBus from './eventBus';
 import store from '@/store/store';
+import router from '@/router';
 
 const defaultTimeout = 45000
 //网络请求提示语
@@ -106,6 +106,11 @@ export function request({url, params=null,method="GET",loading=true} = {}){
 			if(!ret){
 				resolve({error: 'error'});
 			}else if(ret.no !== 200){
+                if(ret.no==401){//需要登录
+                    let t = setTimeout(()=>{
+                        router.push({name: 'login', query: {redirect: -1}});
+                    },500)
+                }
 				resolve({error: ret});
 			}else{
 				resolve({data: ret});

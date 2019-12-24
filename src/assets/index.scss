@@ -1,3 +1,11 @@
+/* flex居中mixin */
+@mixin flex-center($direction:row) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: center;
+    align-items: center;
+}
+
 /* vant-ui样式重置 */
 .van-toast{
 	font-size: 30px;
@@ -10,6 +18,23 @@
 .van-toast.van-toast--text{
 	padding: 20px 20px;
 }
+
+/* 文字溢出mixin */
+@mixin ellipsis($rows:1){
+    overflow: hidden;
+    text-overflow: ellipsis;
+    @if $rows == 1{
+        white-space: nowrap;
+    }@else{
+        display: -webkit-box;
+        -webkit-line-clamp: $rows;
+        /*! autoprefixer: off */
+        -webkit-box-orient: vertical;
+    }
+}
+// @function Calculate($args) {
+// 	@return $args/46.875;
+// }  
 
 /* 基础样式重置 */
 html, body{

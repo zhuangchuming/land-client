@@ -31,6 +31,8 @@ const NAME = 'cm';
 //注意：请确保每个state只负责一件事情，避免多件不同的事情共用同一个state，并记得及时清除state
 const DEFINESTATE = {
 	showLoading: false, //是否显示loading图
+	userInfo: {def: null, save: true}, //字号大小
+	netInfo:{def: null, save: true},//访问的域名信息
 };
 
 //这里的state使用makeState生成
@@ -65,6 +67,8 @@ const DEFINEMUTATION = {
 		hook: (s, payload) => {
 			s.showLoading = false; //隐藏loading图
 		}},
+	setUserInfo:'userInfo',
+	setNetInfo:'netInfo',
 };
 
 const mutations = makeMatution(DEFINEMUTATION, NAME);
@@ -82,6 +86,12 @@ var actions = {
 var getters = {
 	showLoading(state){
 		return state.showLoading;
+	},
+	getUserInfo(state){
+		return state.userInfo;
+	},
+	getNetInfo(state){
+		return state.netInfo
 	}
 };
 

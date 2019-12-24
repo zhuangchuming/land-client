@@ -11,12 +11,12 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-			'/api': {
+			'/landpage': {
 				target: proxyUrl, //调用接口的域名和端口号
 				changeOrigin: true,
-				pathRewrite: {
-					'^/api': proxyUrl //proxyUrl的别名，即调用接口时可以用api代替proxyUrl
-				}
+				// pathRewrite: {
+				// 	'^/api': proxyUrl //proxyUrl的别名，即调用接口时可以用api代替proxyUrl
+				// }
 			}
 		},
 
