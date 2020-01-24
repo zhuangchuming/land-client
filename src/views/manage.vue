@@ -1,7 +1,7 @@
 <template>
     <div class="manage">
         <div class="head">
-            <div class="logo">{{logo}}</div>
+            <div class="logo">{{getUserInfo&&getUserInfo.brand}}</div>
             <div class="item" :class="{select:select==0}" @click="itemClick(0)">
                 <i class="icon iconfont icon-product"></i>
                 产品</div>
@@ -27,11 +27,11 @@
             </ul>
             <div class="fragment">
                 <product ref="product" v-if="fragmentList[0]" v-show="select==0"/>
-                <order v-if="fragmentList[1]" v-show="select==1"/>
+                <order ref="order" v-if="fragmentList[1]" v-show="select==1"/>
                 <gift v-if="fragmentList[2]" ref="gift" v-show="select==2"/>
                 <buyer v-if="fragmentList[3]" v-show="select==3"/>
                 <admin v-if="fragmentList[4]" v-show="select==4"/>
-                <user-center v-if="fragmentList[5]" v-show="select==5"/>
+                <user-center v-if="fragmentList[5]" ref="manage" v-show="select==5"/>
             </div>
         </div>
     </div>
@@ -50,22 +50,28 @@ export default {
     },
     data(){
         return{
-            logo:'HOMESPRIT',
-            select:4,//选中的位置
+            select:1,//头部选中的位置
             siderSelect:-1,//默认侧边栏选中第一位
             //2
-            giftEdit:false,//编辑礼物
+            editState:false,//编辑礼物
+
             list:[
                 [
                     '列表',
                     '添加产品'
                 ],
-                [],
+                [
+                    '添加订单',
+                ],
                 [
                     '添加礼物',
                     '编辑',
                 ],
-                []
+                [],
+                [],
+                [
+                    '编辑',
+                ]
             ],
             fragmentList:[0,0,0,0,0,0],//渲染的list
             leftLst:null,
@@ -74,7 +80,6 @@ export default {
     methods:{
         siderbarClick(idx){
             this.siderSelect=idx;
-            console.log('siderbarClick')
             switch(this.select){
                 case 0:
                     if(idx==0){
@@ -84,14 +89,24 @@ export default {
                     }
                     break;
                 case 1:
+                    switch(idx){
+                        case 0:
+                            this.$refs.order&&this.$refs.order.showAddOrder();
+                            break;
+                    }
                     break;
                 case 2:
                     if(idx==0){
                         this.$refs.gift&&this.$refs.gift.showAddGift();
                     }else if(idx==1){
-                        this.giftEdit=!this.giftEdit;
-                        this.$set(this.leftLst,1,(this.giftEdit?'取消':'编辑'));
-                        this.$refs.gift&&this.$refs.gift.setEditState(this.giftEdit);
+                        this.editState=!this.editState;
+                        this.$set(this.leftLst,1,(this.editState?'取消':'编辑'));
+                        this.$refs.gift&&this.$refs.gift.setEditState(this.editState);
+                    }
+                    break;
+                case 5:
+                    if(idx==0){
+                        this.$refs.manage&&this.$refs.manage.setEditState();
                     }
                     break;
             }
@@ -100,6 +115,7 @@ export default {
             console.log('itemClick',index)
             this.leftLst=this.list[index];
             this.select=index;
+            this.editState=false;
             this.$set(this.fragmentList,index,1);
             this.siderSelect=-1;
         }

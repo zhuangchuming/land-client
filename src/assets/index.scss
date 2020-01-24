@@ -85,3 +85,18 @@ a{
 img{
 	-webkit-touch-callout: none;
 }
+
+.common-btn{
+	width:130px;
+	height:34px;
+	font-size: 16px;
+	line-height: 34px;
+	text-align: center;
+	background:#2B4EC2;
+	border-radius:4px;
+	color: white;
+	border: 1PX solid #2B4EC2;
+	&:active{
+		opacity: .9;
+	}
+}

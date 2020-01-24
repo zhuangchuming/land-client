@@ -78,7 +78,7 @@ export default {
 			font-size: 20px;
 			color: #555;
 			margin-bottom: 12px;
-			
+			font-weight: bold;
 		}
 		.box{
 			display: flex;
@@ -103,6 +103,9 @@ export default {
 			font-size: 14px;
 			align-self: baseline;
 			padding-left: 10px;
+			white-space: pre;
+			width: 100%;
+    		overflow: auto;
 		}
 		&.WAP{
 			flex-direction: row;

@@ -16,6 +16,8 @@
                 <input placeholder="Enter Your Order ID..." v-model="orderID">
                 <div class="sub-tit">Email<sup>*</sup></div>
                 <input placeholder="Enter Your Email..." v-model="mail">
+                <div class="sub-tit">NAME</div>
+                <input placeholder="Enter Your Name..." v-model="name">
                 <div class="sub-tit">Your Facebook ID</div>
                 <input placeholder="Enter Your Facebook ID..." v-model="facebook">
                 <div class="btn" @click="checkOrder">SUBMIT</div>
@@ -26,23 +28,28 @@
                 <div class="body">
                     <div class="title">
                         <div class="circle">
-                            <i class="icon iconfont iconduigou"></i>
+                            <i class="icon iconfont icon-duigou"></i>
                         </div>
                         <div >
                             <div class="cont1">Congratulation!</div>
                             <div class="cont2">You can get your free gift!</div>
                         </div>
                     </div>
+                    <div class="product">
+                        <img class="img" :src="getImgPic(product.pic)">
+                        <div class="price-cont price">Price：<span class="worth">{{product.price}}</span></div>
+                        <div class="price-cont"><span class="worth">{{product.tit}}</span></div>
+                    </div>
                     <div class="cont3">Selected to Get Our Exclusive Gift</div>
                     <div class="gift-list">
                         <li class="gift-item" :class="{'gift-choose':giftIdx==idx}" v-for="(item,idx) of product.gift" :key="idx" @click="giftchoose(item,idx)">
                             <img class="img" :src="getImgPic(item.pic)">
                             <div class="gift-cont">
-                                <div>price:{{item.price}}</div>
-                                <div>description:{{item.descri}}</div>
+                                <div>WORTH：<span class="worth">{{item.price}}</span></div>
+                                <div>DESC：<span>{{item.descri}}</span></div>
                             </div>
                             <div v-if="giftIdx==idx" class="choose">
-                                <i class="icon iconfont iconduigou"></i>
+                                <i class="icon iconfont icon-duigou"></i>
                             </div>
                         </li>
                     </div>
@@ -55,7 +62,7 @@
                 <div class="body">
                     <div class="title">
                         <div class="circle">
-                            <i class="icon iconfont iconduigou"></i>
+                            <i class="icon iconfont icon-duigou"></i>
                         </div>
                         <div >
                             <div class="cont1">Congratulation!</div>
@@ -69,7 +76,7 @@
                             <div>description:{{gift.descri}}</div>
                         </div>
                         <div class="choose">
-                            <i class="icon iconfont iconduigou"></i>
+                            <i class="icon iconfont icon-duigou"></i>
                         </div>
                     </li>
                     <div class="cont4">Overall rating?<sup>*</sup></div>
@@ -85,7 +92,7 @@
             </div>
             <div v-if="state==4" class="win5">
                 <div class="circle">
-                    <i class="icon iconfont iconduigou"></i>
+                    <i class="icon iconfont icon-duigou"></i>
                 </div>
                 <div class="contact">Thank you for submitting the new product experience. </div>
                 <div class="contact">We will contact you as soon as possible.</div>
@@ -106,6 +113,7 @@ export default {
             orderID:null,//买家输入订单号
             mail:null,//买家输入邮箱
             facebook:null,//买家输入faceboo
+            name:null,//名字
             state:0,//当前装调
             star:0,//星级
             gift:null,//用户选择的礼品，默认选择第一个
@@ -129,8 +137,11 @@ export default {
         }
     },
 	methods:{
+        getDescription(descri){
+            let list = descri
+        },
         getImgPic(pic){
-            return serviceUrl+'/landpage'+pic;
+            return serviceUrl+pic;
         },
         wantIt(){
             if(this.giftIdx==-1){
@@ -146,6 +157,11 @@ export default {
 
         next(idx){
             this.state=idx;
+            if(idx==4){//跳转到最后一步
+                delayTime(2000).then(()=>{
+                    window.location.href='/'
+                });
+            }
         },
         //获取当前域名，并用这个域名去后端换取code
         async getNetUrl(){
@@ -166,6 +182,7 @@ export default {
                 mail:this.mail,
                 facebook:this.facebook,
                 orderID:this.orderID,
+                name:this.name
             }
             let {data,error} = await this.$request({url:'/order/query',params});
             if(data){
@@ -177,8 +194,15 @@ export default {
                     this.mails=data.mails.join(',');
                 }
                 if(data.order){
-                    if(data.order.status==0||data.order.status==1){
+                    if(data.order.status==0){//卖家添加的订单状态
                         return this.next(2);
+                    }
+                    if(data.order.status==1){//买家提交请求
+                        if(!data.order.review){//未评论则进入评论
+                            return this.next(2);
+                        }else{//已经评论则提醒用户等待
+                            return this.next(4);
+                        }
                     }
                     if(data.order.status==2){//卖家已经接受请求，很快会
                         return this.next(4);
@@ -216,12 +240,12 @@ export default {
             //提交评论
             let {data,error} = await this.$request({url:'/order/review',method:'POST',params});
             if(error){
-                return this.$toast(error.msg)
+                return this.$toast({message:error.msg,duration:3000})
             }
             if(this.star>=4){//4星及以上，需要跳转到亚马逊评论地址
+                this.$toast({message:'comment had copy!',duration:3000})
                 window.location=this.comment_url;
             }else{
-                this.$toast('comment had copy!')
                 await delayTime(1000);
                 return this.next(4);//跳转到完成页面
             }
@@ -256,21 +280,26 @@ export default {
         }
         .gift-item{
             display: flex;
-            margin-top: 24px;
             padding: 8px;
-            border: 1PX solid transparent;
+            border: 1PX solid #eee;
+            border-radius: 10px;
             position: relative;
+            margin-bottom: 20px;
             .gift-cont{
                 margin-left: 20px;
                 font-size: 30px;
                 div{
                     margin-top: 15px;
+                    font-weight: bold;
+                    .worth{
+                        font-size: 65px;
+                    }
                 }
             }
             .img{
-                height: 300px;
+                height: 400px;
                 width: 300px;
-                border-radius: 20px;
+                border-radius: 10px;
             }
             .choose{
                 position: absolute;
@@ -415,7 +444,7 @@ export default {
                     border-radius:50%;
                     margin-left: 20px;
                     margin-right: 30px;
-                    .iconduigou{
+                    .icon-duigou{
                         color: white;
                         font-size: 30px;
                     }
@@ -429,6 +458,25 @@ export default {
                 .cont2{
                     font-size: 30px;
                     color: #555;
+                }
+            }
+            .product{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 30px;
+                .img{
+                    width: 500px;
+                }
+                .price-cont{
+                    &.price{
+                        font-size: 36px;
+                    }
+                    font-size: 30px;
+                    margin-top: 10px;
+                    .worth{
+                        font-weight: bold;
+                    }
                 }
             }
             .cont3{
@@ -470,7 +518,6 @@ export default {
             display: flex;
             flex-direction: column;
             flex: 1;
-            width: 0;
             .body{
                 padding:0 30px;
                 flex:1;
@@ -479,6 +526,7 @@ export default {
                     width:690px;
                     height:181px;
                     margin-top: 27px;
+                    margin-bottom: 20px;
                     border:1px solid rgba(221,221,221,1);
                     box-shadow:0px 3px 20px rgba(0,0,0,0.16);
                     display: flex;
@@ -494,7 +542,7 @@ export default {
                         border-radius:50%;
                         margin-left: 20px;
                         margin-right: 30px;
-                        .iconduigou{
+                        .icon-duigou{
                             color: white;
                             font-size: 30px;
                         }
@@ -586,7 +634,7 @@ export default {
                 border-radius:50%;
                 margin-top: 290px;
                 margin-bottom: 40px;
-                .iconduigou{
+                .icon-duigou{
                     color: white;
                     font-size: 60px;
                 }

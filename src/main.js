@@ -3,8 +3,8 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-// import '@/assets/font.css';
-import '@/assets/font/iconfont.css';
+import '@/assets/font.css';
+// import '@/assets/font/iconfont.css';
 
 import {Rate,Toast,Popup,Pagination} from 'vant';
 import {request,initRequest} from '@/utils/request.js';
@@ -27,6 +27,16 @@ Vue.prototype.$BLACKBERRY =/(playbook|blackberry|bb\d+).*version\/([\d.]+)/i.tes
 Vue.prototype.$isAPP = Vue.prototype.$isAndroid||Vue.prototype.$isIOS||Vue.prototype.$BLACKBERRY||Vue.prototype.$isWinPhe;
 Vue.prototype.$isWap=!Vue.prototype.$isAPP;
 /* eslint-disable no-new */
+
+import { DatePicker,Dropdown,DropdownMenu,DropdownItem,Button} from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.component(DatePicker.name,DatePicker);
+Vue.component(Dropdown.name,Dropdown);
+Vue.component(DropdownMenu.name,DropdownMenu);
+Vue.component(DropdownItem.name,DropdownItem);
+Vue.component(Button.name,Button);
+
+
 new Vue({
   el: '#app',
   router,

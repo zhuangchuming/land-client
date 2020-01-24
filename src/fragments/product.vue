@@ -5,19 +5,24 @@
             <div class="search-body">
                 <i class="icon iconfont icon-sousuo"></i><input class="search-input" v-model="searchAsin" placeholder="请输入要查找的产品asin码...">
             </div>
+            <div class="common-btn edit" @click="edit">{{editStatus?'完 成':'编 辑'}}</div>
         </div>
         <ul class="product-list">
             <li class="product-item" v-for="(item,idx) of list" :key="idx">
                 <div class="img-warp"><img class="item-img" :src="imgSrv+item.pic"></div>
                 <div class="cont">
+                    <div class="item">添加时间：{{creatTime(item.ct)}}</div>
                     <div class="item" v-if="item.price">产品价值：{{item.price}}</div>
                     <div class="item">ASIN：{{item.asin}}</div>
+                    <div class="item" v-if="upc">{{getUPC(item.upc)}}</div>
                 </div>
                 <ul class="gift-list">
                     <li class="gift-item" v-for="(it,indx) of item.gift" :key="indx">
                         <div class="img-warp1"><img class="item-img1" :src="imgSrv+it.pic"></div>
                     </li>
                 </ul>
+                <div class="delete" v-if="editStatus" @click.stop="deleteFunc(item,idx)"><i class="icon iconfont icon-cha "></i></div>
+                <!-- <div class="delete" v-if="editStatus" @click.stop="editProduct(item,idx)"><i class="icon iconfont icon-cha "></i></div> -->
             </li>
         </ul>
         <van-pagination 
@@ -26,7 +31,7 @@
             :show-page-size="10" 
             force-ellipses
             @change="pgChange"/>
-         <!-- 添加产品 -->
+         <!-- 添加/编辑产品 -->
         <van-popup v-model="addProductModel" position="center">
             <div class="pop-win">
                 <div class="title"> 添加产品<i class="icon iconfont icon-cha" @click="addProductModel=false"></i></div>
@@ -38,6 +43,59 @@
                     <div class="input-item">
                         <div >ASIN码</div><span class="input-import">*</span>
                         <input v-model="asin" placeholder="请输入ASIN码...">
+                    </div>
+                    <div class="input-item">
+                        <div >UPC码</div><span class="input-import">*</span>
+                        <input v-model="upc" placeholder="请输入UPC码(选填)...">
+                    </div>
+                    <div class="input-item">
+                        <div >产品标题</div><span class="input-import">*</span>
+                        <input v-model="tit" placeholder="请输入产品标题...">
+                    </div>
+                    <div class="input-item">
+                        <div >产品价值</div><span class="input-import">*</span>
+                        <input v-model="price" placeholder="请输入产品价值...">
+                    </div>
+                    <!-- <div class="input-item">
+                        <div >产品对应的评论链接：LINK (如何获取该链接：<br/>1、点击某个产品详情，然后拖到最下面（Write a customer review）；<br/>2、通过谷歌后台检查元素，可以看到该产品的评论链接)</div>
+                        <span class="input-import">*</span>
+                        <input v-model="link" placeholder="请输入产品评论链接...">
+                    </div> -->
+                    <div class="input-item">
+                    <div><span class="input-import">*</span> 请选择产品对应的赠品.</div></div>
+                    <ul class="giftlst">
+                        <li class="gift-item" :class="{select:gift.indexOf(item.id)!=-1}" v-for="(item,idx) of giftList" :key="idx" @click="chooseGift(item)">
+                            <div class="img-warp"><img class="img" :src="imgSrv+item.pic"></div>
+                            <div class="descri">{{item.descri}}</div>
+                            <div class="choose-circle">
+                                <div class="choose-solid"></div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="input-item">
+                        <div><span class="input-import">*</span>描述</div>
+                        <textarea v-model="descri" placeholder="请输入产品描述..."></textarea>
+                    </div>
+                </div>
+                <div class="btn-body">
+                    <div class="common-btn" @click="addProduct">保 存</div>
+                    <div class="common-btn btn1" @click="addProductModel=false">取 消</div>
+                </div>
+            </div>
+		</van-popup>
+
+        <!-- 添加/编辑产品 -->
+        <!-- <van-popup v-model="editProductModel" position="center">
+            <div class="pop-win">
+                <div class="title"> 编辑产品<i class="icon iconfont icon-cha" @click="editProductModel=false"></i></div>
+                <div class="pop-cont">
+                    <div class="input-item">
+                        <div>请选择 400X400 的产品主图片</div><span class="input-import">*</span>
+                        <input type="file" accept="image/*" @change="change">
+                    </div>
+                    <div class="input-item">
+                        <div >UPC码</div><span class="input-import">*</span>
+                        <input v-model="upc" placeholder="请输入UPC码(选填)...">
                     </div>
                     <div class="input-item">
                         <div >产品标题</div><span class="input-import">*</span>
@@ -58,7 +116,6 @@
                         <li class="gift-item" :class="{select:gift.indexOf(item.id)!=-1}" v-for="(item,idx) of giftList" :key="idx" @click="chooseGift(item)">
                             <div class="img-warp"><img class="img" :src="imgSrv+item.pic"></div>
                             <div class="descri">{{item.descri}}</div>
-                            <div>Price：{{item.price}}</div>
                             <div class="choose-circle">
                                 <div class="choose-solid"></div>
                             </div>
@@ -70,11 +127,11 @@
                     </div>
                 </div>
                 <div class="btn-body">
-                    <div class="btn" @click="addProduct">保 存</div>
-                    <div class="btn btn1" @click="addProductModel=false">取 消</div>
+                    <div class="common-btn" @click="editProduct">保 存</div>
+                    <div class="common-btn btn1" @click="editProductModel=false">取 消</div>
                 </div>
             </div>
-		</van-popup>
+		</van-popup> -->
     </div>
 </template>
 
@@ -86,7 +143,8 @@ export default {
     name:'product',
     data(){
         return{
-            addProductModel:false,
+            addProductModel:false,//添加
+            editProductModel:true,//
             list:[],
             giftList:[],//礼物列表
             pageCnt:0,
@@ -100,9 +158,32 @@ export default {
             link:null,//评论的链接
             tit:null,//产品标题
             price:null,//产品价值
+            upc:null,//upc码
+            editStatus:false,//
         }
     },
     methods:{
+        //获取upc或者
+        getUPC(upc){
+            if(!upc)return;
+            if(upc.length==13){
+                return `ean：${upc}`;
+            }else{
+                return `upc：${upc}`;
+            }
+        },
+        creatTime(ct){
+            let t = new Date(ct);
+            return `${t.getFullYear()}-${t.getMonth()+1}-${t.getDate()} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`
+        },
+        //编辑保存产品
+        editProduct(item,idx){
+
+        },
+        //编辑
+        edit(){
+            this.editStatus=!this.editStatus;
+        },
         //选择礼物
         chooseGift(item){
             let idx= this.gift.indexOf(item.id);
@@ -164,13 +245,14 @@ export default {
             if(!this.asin){
                 return this.$toast('请为该产品添加一个asin码。')
             }
-            if(!this.link){
-                return this.$toast('输入产品评论时对应的链接。')
-            }else{
-                if(!/^https:\/\/www\.amazon\.com(.)*$/.test(this.link)){
-                    this.link='https://www.amazon.com'+this.link;
-                }
-            }
+            // if(!this.link){
+            //     return this.$toast('输入产品评论时对应的链接。')
+            // }else{
+            //     if(!/^https:\/\/www\.amazon\.com(.)*$/.test(this.link)){
+            //         this.link='https://www.amazon.com'+this.link;
+            //     }
+            // }
+            this.link = 'https://www.amazon.com/review/create-review/ref=cm_cr_othr_d_wr_but_top?ie=UTF8&channel=glance-detail&asin='+this.asin;
             if(!this.blob){
                 return this.$toast('请选择产品图片。')
             }
@@ -182,6 +264,7 @@ export default {
             formData.append('tit',this.tit);
             formData.append('price',this.price);
             formData.append("pic", this.blob, "a.jpg");
+            formData.append('upc',this.upc)
             formData.enctype = "multipart/form-data";
             let {data,error} = await this.$request({url:'/product/add',method:'POST',params:formData});
             if(data){
@@ -199,15 +282,21 @@ export default {
                 this.$toast(error.msg||'添加失败请稍后重试');
             }
         },
-        delete(){
-
+        //删除某个产品
+        async deleteFunc(item,idx){
+            let {data,error} = await this.$request({url:'/product/del',method:'POST',params:{asin:item.asin}});
+            if(data){
+                this.list.splice(idx,1);
+                this.$toast("删除成功。")
+            }else{
+                this.$toast(error.msg||"删除失败。")
+            }
         },
         showAddProduct(){
             this.addProductModel=true;
         }
     },
     created(){
-        console.log('product')
         this.query();
         this.getGiftLst();
     },
@@ -225,6 +314,8 @@ export default {
     .search{
         display: flex;
         margin-bottom: 20px;
+        position: relative;
+        margin-top: 10px;
         .search-btn{
             width:100px;
             height:36px;
@@ -248,6 +339,11 @@ export default {
                 width: 400px;
             }
         }
+        .edit{
+            position: absolute;
+            right: 10px;
+            font-size: 18px;
+        }
     }
     .product-list{
         .product-item{
@@ -259,6 +355,7 @@ export default {
             padding: 12px;
             box-sizing: border-box;
             border-radius: 8px;
+            position: relative;
             .img-warp{
                 width: 250px;
                 height: 250px;
@@ -295,6 +392,24 @@ export default {
                     }
                 }
             }
+            .delete{
+                position: absolute;
+                left: -5px;
+                top: -5px;
+                height: 30px;
+                width: 30px;
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .icon-cha{
+                    color:white;
+                }
+                &:active{
+                    opacity: 0.7;
+                }
+            }
         }
     }
     .pop-win{
@@ -317,9 +432,10 @@ export default {
             flex:1;
             overflow-y: auto;
             padding-top: 20px;
+            padding-left: 20px;
+            padding-right: 10px;
         }
         .input-item{
-            padding-left: 20px;
             margin-bottom: 10px;
             textarea{
                 width: 380px;
@@ -410,20 +526,6 @@ export default {
             display: flex;
             align-items: center;
             justify-content: center;
-            .btn{
-                width:130px;
-                height:34px;
-                font-size: 16px;
-                line-height: 34px;
-                text-align: center;
-                background:#2B4EC2;
-                border-radius:4px;
-                color: white;
-                border: 1PX solid #2B4EC2;
-                &:active{
-                    opacity: .9;
-                }
-            }
             .btn1{
                 color: #2B4EC2;
                 background: #fff;
